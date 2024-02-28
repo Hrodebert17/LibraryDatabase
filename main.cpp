@@ -58,8 +58,35 @@ int main() {
 		<<
 	std::endl;
 	while (true) {
-		std::cout << "menu:\n" << "press N to add a new book\n" << "press L to list all the books" << std::endl;
+		std::cout << "menu:\n" << "press N to add a new book\n" << "press L to list all the books\n" << "press R to remove a book\n" << "press Q to quit" << std::endl;
 		std::cin  >> input;
+			if (input == "Q" || input == "q") { return 0;}
+			else if (input == "R" || input == "r")  {
+				std::cout << "insert the book id" << std::endl;
+				std::cin  >> input;
+				try {
+					int IdToDelte = std::stoi(input);
+					for (auto book : books) {
+						if (book.id == IdToDelte) {
+							db.open();
+							db.eraseValuesFromTable("books",std::vector<qic::Value>{
+								qic::Value(qic::String, book.author),
+								qic::Value(qic::String, book.title),
+								qic::Value(qic::Integer, book.id)
+							});
+							db.close();
+							books.clear();
+							std::vector<std::vector<qic::Value>> booksFromTable = db.getAllValuesFromTable("books");
+							for (auto book : booksFromTable) {
+								books.push_back(Book(book.at(2).get_int_value(),book.at(0).get_string_value(),book.at(1).get_string_value()));
+							}
+						}
+					}
+				} catch (std::exception e) {
+
+					std::cout << "id needs to be a number." << std::endl;
+				}
+			}
 			if (input == "N" || input == "n") {
 				Book newBook;
 				std::cout << "insert the book title"  << std::endl;
