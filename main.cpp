@@ -1,5 +1,7 @@
 #include <iostream>
+#include <string>
 #include "libs/Qic_database.h"
+#include <boost/algorithm/string.hpp>
 
 class Book {
 public:
@@ -13,6 +15,29 @@ public:
 		this->title = pTitle;
 	}
 };
+
+std::string simplifyString(std::string input) {
+	boost::to_lower(input);
+	std::string simplifiedString;
+	char allowedChars[] = {
+		'q','e','e','r','t','y','u','i','o','p','a','s','d','f','g','h','j','k',
+		'l','z','x','c','v','b','n','m','1','2','3','4','5','6','7','8','9','0'
+	};
+	for (int i = 0; i < input.size(); i++) {
+		bool isAllowed = false;
+		char character = input[i];
+		for (char allowedChar : allowedChars){ 
+			if (character == allowedChar) {
+				isAllowed = true;
+			}
+		}
+		if (isAllowed) {
+			simplifiedString += character;
+		}
+	}
+	return simplifiedString;
+
+} 
 
 bool tableExists(std::string table, std::vector<std::string> vec) {
 	for (std::string tableInVec : vec) {
@@ -58,9 +83,31 @@ int main() {
 		<<
 	std::endl;
 	while (true) {
-		std::cout << "menu:\n" << "press N to add a new book\n" << "press L to list all the books\n" << "press R to remove a book\n" << "press Q to quit" << std::endl;
+		std::cout << "menu:\n" << "press N to add a new book\n" << "press L to list all the books\n" << "press R to remove a book\n" << "press S to search\n" << "press Q to quit" << std::endl;
 		std::cin  >> input;
-			if (input == "Q" || input == "q") { return 0;}
+			if (input == "S" || input == "s") {
+			std::cout << "What you want to search? (T = tittle, A = author, i = Id)" << std::endl;
+			std::cin  >> input;
+			if (input == "t" || input == "T") {
+				std::cout << "insert the title you want to search" << std::endl;
+				std::cin  >> input;
+				input = simplifyString(input);
+				std::vector<Book> search;
+				for (int i = 0; i < books.size(); i++) {
+					if (boost::contains(simplifyString( books.at(i).title ) ,input) ) { 
+						search.push_back(books.at(i));
+					}
+					for (auto bookSession : search) {
+						std::cout << "--------------------------------------------" << std::endl;
+						std::cout << "author : " << bookSession.author << std::endl;
+						std::cout << "title  : " << bookSession.title << std::endl;
+						std::cout << "id     : " << bookSession.id << std::endl;
+					}
+					std::cout <<"\n\n\n\n" << "-------options-------" << std::endl;
+
+				}
+			}
+			} else if (input == "Q" || input == "q") { return 0;}
 			else if (input == "R" || input == "r")  {
 				std::cout << "insert the book id" << std::endl;
 				std::cin  >> input;
