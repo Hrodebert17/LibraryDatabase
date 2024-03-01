@@ -90,23 +90,42 @@ int main() {
 			std::cin  >> input;
 			if (input == "t" || input == "T") {
 				std::cout << "insert the title you want to search" << std::endl;
+			}
+			if (input == "a" || input == "A") {
+				std::cout << "insert the author you want to search" << std::endl;
+			}
+			if (input == "i" || input == "I") {
+				std::cout << "insert the id you want to search" << std::endl;
+			}
+				std::string mode = input;
 				std::cin  >> input;
 				input = simplifyString(input);
 				std::vector<Book> search;
 				for (int i = 0; i < books.size(); i++) {
-					if (boost::contains(simplifyString( books.at(i).title ) ,input) ) { 
-						search.push_back(books.at(i));
+					if (mode == "t" || mode == "T") {
+						if (boost::contains(simplifyString( books.at(i).title ) ,input) ) { 
+							search.push_back(books.at(i));
+						}
 					}
-					for (auto bookSession : search) {
-						std::cout << "--------------------------------------------" << std::endl;
-						std::cout << "author : " << bookSession.author << std::endl;
-						std::cout << "title  : " << bookSession.title << std::endl;
-						std::cout << "id     : " << bookSession.id << std::endl;
+					if (mode == "a" || mode == "A") {
+						if (boost::contains(simplifyString( books.at(i).author ) ,input) ) { 
+							search.push_back(books.at(i));
+						}
 					}
-					std::cout <<"\n\n\n\n" << "-------options-------" << std::endl;
+					if (mode == "i" || mode == "I") {
+						if (boost::contains(simplifyString( std::to_string(books.at(i).id) ) ,input) ) { 
+							search.push_back(books.at(i));
+						}
+					}
 
 				}
+			for (auto bookSession : search) {
+				std::cout << "--------------------------------------------" << std::endl;
+				std::cout << "author : " << bookSession.author << std::endl;
+				std::cout << "title  : " << bookSession.title << std::endl;
+				std::cout << "id     : " << bookSession.id << std::endl;
 			}
+			std::cout <<"\n\n\n\n" << "-------options-------" << std::endl;
 			} else if (input == "Q" || input == "q") { return 0;}
 			else if (input == "R" || input == "r")  {
 				std::cout << "insert the book id" << std::endl;
