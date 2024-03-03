@@ -35,7 +35,7 @@ std::string simplifyString(std::string input)
 	};
 	// we lower the string
 	boost::to_lower(input);
-	// for each character of the string we cheeck if its allowed and if it is we add it into the new string
+	// for each character of the string we check if it is allowed and if it is we add it into the new string
 	for (int i = 0; i < input.size(); i++) {
 		bool isAllowed = false;
 		char character = input[i];
@@ -73,12 +73,12 @@ int main()
 	std::vector<std::string> tables;
 	std::string input;
 
-	std::cout << "reading the database." << std::endl;
+	std::cout << "Reading the database." << std::endl;
 	
 	db.open();
 	tables = db.getAllTables();
 
-	// If the table "book" of the database do not exists we print a warning and we create the table
+	// If the table "book" of the database does not exists we print a warning and we create the table
 	// Else if the table exists we can scan it to read all the books values.
 	if (!tableExists("books",tables))
 	{
@@ -90,7 +90,7 @@ int main()
 			qic::dataType::Integer // book id
 		});
 	
-		std::cout << "seems like the books data is either corrupted or non existing.\n creating a new database table for the data..." << std::endl;
+		std::cout << "It seems like the books data is either corrupted or non existing.\n creating a new database table for the data..."  << std::endl;
 
 	}
 	else
@@ -118,30 +118,30 @@ int main()
 	while (true) {
 		// we print all the options avaible to the user
 		std::cout <<
-			"menu:\n" << 
-			"press N to add a new book\n" <<
-			"press L to list all the books\n" <<
-			"press R to remove a book\n" <<
-			"press S to search\n" <<
-			"press Q to quit" <<
+			"Menu:\n" << 
+			"Press N to add a new book\n" <<
+			"Press L to list all the books\n" <<
+			"Press R to remove a book\n" <<
+			"Press S to search\n" <<
+			"Press Q to quit" <<
 		std::endl;
 		// we get the input and then we handle it
 		std::cin  >> input;
 		if (input == "S" || input == "s") {
 			std::string mode;
 			std::vector<Book> search;
-			// if the user wants to search a book we give him some options and then we collect the input
+			// if the user wants to search a book we give them some options and then we collect the input
 			std::cout << "What you want to search? (T = tittle, A = author, i = Id)" << std::endl;
 			std::cin  >> input;
 			// we cheek which option was chosen and print some instructions
 			if (input == "t" || input == "T") {
-				std::cout << "insert the title you want to search" << std::endl;
+				std::cout << "Please insert the title you want to search" << std::endl;
 			}
 			if (input == "a" || input == "A") {
-				std::cout << "insert the author you want to search" << std::endl;
+				std::cout << "Please insert the author you want to search" << std::endl;
 			}
 			if (input == "i" || input == "I") {
-				std::cout << "insert the id you want to search" << std::endl;
+				std::cout << "Please insert the ID you want to search" << std::endl;
 			}
 			mode = input;
 			// we gather the input and save it.
@@ -169,12 +169,12 @@ int main()
 				}
 
 			}
-			// for each book in the search result we print the author,title and id.
+			// for each book in the search result we print the author,title and Id.
 			for (auto bookSession : search) {
 				std::cout << "--------------------------------------------" << std::endl;
-				std::cout << "author : " << bookSession.author << std::endl;
-				std::cout << "title  : " << bookSession.title << std::endl;
-				std::cout << "id     : " << bookSession.id << std::endl;
+				std::cout << "Author : " << bookSession.author << std::endl;
+				std::cout << "Title  : " << bookSession.title << std::endl;
+				std::cout << "ID     : " << bookSession.id << std::endl;
 			}
 			// then we print the options again
 			std::cout <<"\n\n\n\n" << "-------options-------" << std::endl;
@@ -185,21 +185,21 @@ int main()
 		}
 		else if (input == "R" || input == "r")
 		{
-			// if the user whants to remove a book then weask for the id 
-			std::cout << "insert the book id" << std::endl;
+			// if the user wants to remove a book then we ask for the ID
+			std::cout << "insert the book ID" << std::endl;
 			std::cin  >> input;
 			try 
 			{
 				// we save 
 				int IdToDelte = std::stoi(input);
-				// now for each book we cheeck if the id matches.
+				// now for each book we check if the ID matches.
 				for (auto book : books)
 				{
 					if (book.id == IdToDelte)
 					{
-						// if the id matches we open the database
+						// if the ID matches we open the database
 						db.open();
-						// then we remvoe that book from the database.
+						// then we remove that book from the database.
 						db.eraseValuesFromTable("books",std::vector<qic::Value>
 							{
 								qic::Value(qic::String, book.author),
@@ -215,21 +215,21 @@ int main()
 			}
 			catch (std::exception e)
 			{
-				// In the case the id is not a number we ask the user to insert a number.
-				std::cout << "id needs to be a number." << std::endl;
+				// In the case the ID is not a number we ask the user to insert a number.
+				std::cout << "ID needs to be a number." << std::endl;
 			}
 		}
 		if (input == "N" || input == "n")
 		{
-			// if the user wants to add an other book we create a new book instance and we ask the user to insert the parameters of it
+			// if the user wants to add another book we create a new book instance and we ask the user to insert the parameters of it
 			Book newBook;
-			std::cout << "insert the book title"  << std::endl;
+			std::cout << "Insert the book title"  << std::endl;
 			std::cin  >> input;
 			newBook.title = input;
-			std::cout << "insert the book author" << std::endl;
+			std::cout << "Insert the book author" << std::endl;
 			std::cin  >> input;
 			newBook.author = input;
-			std::cout << "insert the book id"    << std::endl;
+			std::cout << "Insert the book ID"    << std::endl;
 			std::cin  >> input;
 			// if the id is not a number we ask to insert a number and we just skip this loop itineration.
 			try
@@ -238,7 +238,7 @@ int main()
 			}
 			catch (std::exception e)
 			{
-				std::cout << "bad id. retry" << std::endl;	
+				std::cout << "bad ID. retry" << std::endl;	
 				continue;
 			}
 			// we open the database and we add a new book inside of it
@@ -251,18 +251,18 @@ int main()
 				});
 			db.close();
 			// we close the database and we add the book to the vector
-			std::cout << "added a book to the catalogue" << std::endl;
+			std::cout << "Added a book to the catalogue" << std::endl;
 			books.push_back(newBook);
 		}
 		else if (input == "l" || input == "L")
 		{
-			// for each book in the "books" vector we print author, title and id of it.
+			// for each book in the "books" vector we print author, title and ID of it.
 			for (auto bookSession : books)
 			{
 				std::cout << "--------------------------------------------" << std::endl;
-				std::cout << "author : " << bookSession.author << std::endl;
-				std::cout << "title  : " << bookSession.title << std::endl;
-				std::cout << "id     : " << bookSession.id << std::endl;
+				std::cout << "Author : " << bookSession.author << std::endl;
+				std::cout << "Title  : " << bookSession.title << std::endl;
+				std::cout << "ID     : " << bookSession.id << std::endl;
 			}
 			// then we print the options again.
 			std::cout <<"\n\n\n\n" << "-------options-------" << std::endl;
