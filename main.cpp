@@ -3,21 +3,31 @@
 #include <boost/algorithm/string.hpp>
 #include "libs/Qic_database.h"
 
+//TODO add a way to lend a book and to unlend a book. 
+
+struct date {
+	int day,month,year;
+};
+
 class Book 
 {
 public:
+	bool landed;
 	int id;
 	std::string author;
 	std::string title;
+	std::string person_who_has_the_book;
+	date landedDate;
 	Book() {}
-	Book(int pId, std::string pAuthor, std::string pTitle)
+	Book(int pId, std::string pAuthor, std::string pTitle, bool pLanded)
 	{
 		this->id = pId;
 		this->author = pAuthor;
 		this->title = pTitle;
+		this->landed = pLanded;
 	}
 	bool operator==(const Book &other) {
-		if (other.id == this->id && other.title == this->title && other.author == this->author) {
+		if (other.id == this->id && other.title == this->title && other.author == this->author && other.landed == this->landed) {
 			return true;
 		}
 		return false;
@@ -30,7 +40,7 @@ std::string simplifyString(std::string input)
 	std::string simplifiedString;
 	// we declare an array containing all the characters which are allowed into the string
 	char allowedChars[] = {
-		'q','e','e','r','t','y','u','i','o','p','a','s','d','f','g','h','j','k',
+		'a','e','e','r','t','y','u','i','o','p','a','s','d','f','g','h','j','k',
 		'l','z','x','c','v','b','n','m','1','2','3','4','5','6','7','8','9','0'
 	};
 	// we lower the string
@@ -87,7 +97,12 @@ int main()
 		{
 			qic::dataType::String, // author
 			qic::dataType::String, // title
-			qic::dataType::Integer // book id
+			qic::dataType::Integer, // book id
+			qic::dataType::Boolean, // landed 
+			qic::dataType::Integer, // landed day
+			qic::dataType::Integer, // landed month
+			qic::dataType::Integer, // landed year
+			qic::dataType::String,  // the name of the person who landed the book.
 		});
 	
 		std::cout << "It seems like the books data is either corrupted or non existing.\n creating a new database table for the data..."  << std::endl;
@@ -99,7 +114,14 @@ int main()
 		std::vector<std::vector<qic::Value>> booksFromTable = db.getAllValuesFromTable("books");
 		// each book in the raw data books vector "booksFromTable" gets converted into a Book and added to the "books" vector
 		for (auto book : booksFromTable) {
-			books.push_back(Book(book.at(2).get_int_value(),book.at(0).get_string_value(),book.at(1).get_string_value()));
+			Book newInstance(book.at(2).get_int_value(),book.at(0).get_string_value(),book.at(1).get_string_value(),book.at(3).get_bool_value());
+			newInstance.landedDate = date{
+				.day = book.at(4).get_int_value(),
+				.month = book.at(5).get_int_value(),
+				.year = book.at(6).get_int_value(),
+			};
+			newInstance.person_who_has_the_book = book.at(7).get_string_value();
+			books.push_back(newInstance);
 		}
 		// now that we added all the books found in the database we can close it and open the menu.
 
@@ -152,7 +174,6 @@ int main()
 			// for each book we cheeck if they match the search and if they do we add them to a vector containing the search results.
 			for (int i = 0; i < books.size(); i++) {
 				if (mode == "t" || mode == "T") {
-					std::cout << mode;
 					if (boost::contains(simplifyString( books.at(i).title ) ,input) ) { 
 						search.push_back(books.at(i));
 					}
@@ -172,8 +193,12 @@ int main()
 			// for each book in the search result we print the author,title and Id.
 			for (auto bookSession : search) {
 				std::cout << "--------------------------------------------" << std::endl;
+				std::string landed_warning;
+				if (bookSession.landed) {
+					landed_warning = "[landed]";
+				}
+				std::cout << "Title  : " << bookSession.title << landed_warning << std::endl;
 				std::cout << "Author : " << bookSession.author << std::endl;
-				std::cout << "Title  : " << bookSession.title << std::endl;
 				std::cout << "ID     : " << bookSession.id << std::endl;
 			}
 			// then we print the options again
@@ -204,7 +229,12 @@ int main()
 							{
 								qic::Value(qic::String, book.author),
 								qic::Value(qic::String, book.title),
-								qic::Value(qic::Integer, book.id)
+								qic::Value(qic::Integer, book.id),
+								qic::Value(qic::Boolean, book.landed),
+								qic::Value(qic::Integer, book.landedDate.day),
+								qic::Value(qic::Integer, book.landedDate.month),
+								qic::Value(qic::Integer, book.landedDate.year),
+								qic::Value(qic::String, book.person_who_has_the_book)
 							});
 						// we close the database
 						db.close();
@@ -247,7 +277,12 @@ int main()
 				{
 					qic::Value(qic::String,newBook.author),
 					qic::Value(qic::String,newBook.title),
-					qic::Value(qic::Integer,newBook.id)
+					qic::Value(qic::Integer,newBook.id),
+					qic::Value(qic::dataType::Boolean, false),
+			                qic::Value(qic::dataType::Integer, 0),
+			                qic::Value(qic::dataType::Integer, 0),
+			                qic::Value(qic::dataType::Integer, 0),
+			                qic::Value(qic::dataType::String, "")
 				});
 			db.close();
 			// we close the database and we add the book to the vector
@@ -260,8 +295,12 @@ int main()
 			for (auto bookSession : books)
 			{
 				std::cout << "--------------------------------------------" << std::endl;
+				std::string landed_warning;
+				if (bookSession.landed) {
+					landed_warning = "[landed]";
+				}
+				std::cout << "Title  : " << bookSession.title << landed_warning << std::endl;
 				std::cout << "Author : " << bookSession.author << std::endl;
-				std::cout << "Title  : " << bookSession.title << std::endl;
 				std::cout << "ID     : " << bookSession.id << std::endl;
 			}
 			// then we print the options again.
