@@ -29,15 +29,15 @@ int main()
         // we get the input and then we handle it
 	std::string input;
         std::cin  >> input;
-        if (input == "S" || input == "s") 
+	if (input == "S" || input == "s") 
 	{
 		search();
 	}
-        else if (input == "Q" || input == "q")
+	else if (input == "Q" || input == "q")
         {
-            return 0;
+        	return 0;
         }
-        else if (input == "R" || input == "r")
+	else if (input == "R" || input == "r")
         {
 		remove();
         }
@@ -45,7 +45,7 @@ int main()
         {
 		newBook();
         }
-        else if (input == "l" || input == "L") 
+	else if (input == "L" || input == "l") 
 	{
 		list();
 	}
