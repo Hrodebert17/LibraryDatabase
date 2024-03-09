@@ -2,6 +2,9 @@
 #include <iostream>
 #include "libs/Qic_database.h"
 #include <boost/algorithm/string.hpp>
+#include <string>
+#include <limits>
+
 
 // we declare all the important variables here.
 qic::DataBase db("books.catalogue");
@@ -10,7 +13,7 @@ std::vector<std::string> tables;
 std::string input;
 
 void unBorrowBook() {
-	std::cout << "which book would you like to un borrow" << std::endl;
+	std::cout << "which book would you like to un borrow(ID)" << std::endl;
 	std::cin  >> input;
 	// to avoid errors caused by the user inserting a string instead of an int we add a try statment 
 	try {
@@ -71,7 +74,9 @@ void borrowBook()
 				std::cin  >> book->landedDate.day >> book->landedDate.month >> book->landedDate.year;
 				book->landed = true;
 				std::cout << "who will have the book?" << std::endl;
-				std::cin  >> book->person_who_has_the_book;
+				std::cin.clear();
+				std::cin.ignore(std::numeric_limits<std::streamsize>::max(),'\n');
+				std::getline(std::cin,book->person_who_has_the_book);
 				break;
 			} 
       		}
@@ -224,7 +229,9 @@ void search()
     }
     mode = input;
     // we gather the input and save it.
-    std::cin  >> input;
+    std::cin.clear();
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(),'\n');
+    std::getline(std::cin,input);
 
     // we simplify the input so that we can find better results
     input = simplifyString(input);
@@ -330,13 +337,16 @@ void newBook()
 	// if the user wants to add another book we create a new book instance and we ask the user to insert the parameters of it
 	Book newBook;
 	std::cout << "Insert the book title"  << std::endl;
-	std::cin  >> input;
+	
+	std::cin.clear();
+	std::cin.ignore();
+	std::getline(std::cin,input);
 	newBook.title = input;
 	std::cout << "Insert the book author" << std::endl;
-	std::cin  >> input;
+	std::getline(std::cin,input);
 	newBook.author = input;
 	std::cout << "Insert the book ID"    << std::endl;
-	std::cin  >> input;
+	std::getline(std::cin,input);
 	// if the id is not a number we ask to insert a number and we just skip this loop itineration.
 	try
 	{
