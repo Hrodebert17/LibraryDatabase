@@ -9,7 +9,65 @@ std::vector<Book> books;
 std::vector<std::string> tables;
 std::string input;
 
-void loadTables() {
+void borrowBook()
+{
+	std::cout << "which book would you like to borrow (insert the ID)" << std::endl;
+	std::cin  >> input;
+	// to avoid errors caused by the user inserting a string instead of an int we add a try statment
+	try {
+		// for each book we check if the id matches until we get one match
+		for (int i = 0; i < books.size(); i++) {
+			Book *book = &books.at(i);
+			if (std::stoi(input) == book->id) {
+				std::cout << "please insert when to expire the book borrow. (day/year/month)" << std::endl;
+				std::cin  >> book->landedDate.day >> book->landedDate.month >> book->landedDate.year;
+				book->landed = true;
+				std::cout << "who will have the book?" << std::endl;
+				std::cin  >> book->person_who_has_the_book;
+				break;
+			} 
+      		}
+		db.open();
+		db.dropTable("books");
+		db.createTable("books",std::vector<qic::dataType> 
+		{
+			qic::dataType::String, // author
+			qic::dataType::String, // title
+			qic::dataType::Integer, // book id
+			qic::dataType::Boolean, // landed 
+			qic::dataType::Integer, // landed day
+			qic::dataType::Integer, // landed month
+			qic::dataType::Integer, // landed year
+			qic::dataType::String,  // the name of the person who landed the book.
+		});
+		// now we update the database.
+		for (auto book : books) {
+		    db.addValueToTable("books",std::vector<qic::Value>
+		    {
+			    qic::Value(qic::String,book.author),
+			    qic::Value(qic::String,book.title),
+			    qic::Value(qic::Integer,book.id),
+			    qic::Value(qic::dataType::Boolean, book.landed),
+			    qic::Value(qic::dataType::Integer, book.landedDate.day),
+			    qic::Value(qic::dataType::Integer, book.landedDate.month),
+			    qic::Value(qic::dataType::Integer, book.landedDate.year),
+			    qic::Value(qic::dataType::String, book.person_who_has_the_book)
+		    });	
+		}
+		db.close();
+	} catch (std::exception) {}
+}
+
+Book::Book(int pId, std::string pAuthor, std::string pTitle, bool pLanded)
+{
+	this->id = pId;
+	this->author = pAuthor;
+	this->title = pTitle;
+	this->landed = pLanded;
+}
+
+void loadTables() 
+{
 
 	db.open();
 	tables = db.getAllTables();
@@ -99,8 +157,8 @@ bool tableExists(std::string table, std::vector<std::string> vec)
 }
 
 
-
-void search() {
+void search() 
+{
     std::string mode;
     std::vector<Book> search;
     // if the user wants to search a book we give them some options and then we collect the input
@@ -146,7 +204,10 @@ void search() {
 	std::cout << "--------------------------------------------" << std::endl;
 	std::string landed_warning;
 	if (bookSession.landed) {
-	    landed_warning = "[landed]";
+	    landed_warning = "[Borrowed] until: " + std::to_string(bookSession.landedDate.day)
+				+ "/" + std::to_string(bookSession.landedDate.month) 
+				+ "/" + std::to_string(bookSession.landedDate.year)
+				+ " by: " + bookSession.person_who_has_the_book;
 	}
 	std::cout << "Title  : " << bookSession.title << landed_warning << std::endl;
 	std::cout << "Author : " << bookSession.author << std::endl;
@@ -157,7 +218,8 @@ void search() {
 
 }
 
-void remove() {
+void remove() 
+{
     // if the user wants to remove a book then we ask for the ID
     std::cout << "insert the book ID" << std::endl;
     std::cin  >> input;
@@ -215,61 +277,69 @@ void remove() {
 
 }
 
-void newBook() {
-    // if the user wants to add another book we create a new book instance and we ask the user to insert the parameters of it
-    Book newBook;
-    std::cout << "Insert the book title"  << std::endl;
-    std::cin  >> input;
-    newBook.title = input;
-    std::cout << "Insert the book author" << std::endl;
-    std::cin  >> input;
-    newBook.author = input;
-    std::cout << "Insert the book ID"    << std::endl;
-    std::cin  >> input;
-    // if the id is not a number we ask to insert a number and we just skip this loop itineration.
-    try
-    {
+void newBook() 
+{
+	// if the user wants to add another book we create a new book instance and we ask the user to insert the parameters of it
+	Book newBook;
+	std::cout << "Insert the book title"  << std::endl;
+	std::cin  >> input;
+	newBook.title = input;
+	std::cout << "Insert the book author" << std::endl;
+	std::cin  >> input;
+	newBook.author = input;
+	std::cout << "Insert the book ID"    << std::endl;
+	std::cin  >> input;
+	// if the id is not a number we ask to insert a number and we just skip this loop itineration.
+	try
+	{
 	newBook.id = std::stoi(input);
-    }
-    catch (std::exception e)
-    {
+	}
+	catch (std::exception e)
+	{
 	std::cout << "bad ID. retry" << std::endl;
 	return;
-    }
-    // we open the database and we add a new book inside of it
-    db.open();
+	}
 
-    db.addValueToTable("books",std::vector<qic::Value>
-	    {
-		    qic::Value(qic::String,newBook.author),
-		    qic::Value(qic::String,newBook.title),
-		    qic::Value(qic::Integer,newBook.id),
-		    qic::Value(qic::dataType::Boolean, false),
-		    qic::Value(qic::dataType::Integer, 0),
-		    qic::Value(qic::dataType::Integer, 0),
-		    qic::Value(qic::dataType::Integer, 0),
-		    qic::Value(qic::dataType::String, "")
-	    });
-    db.close();
-    // we close the database and we add the book to the vector
-    std::cout << "Added a book to the catalogue" << std::endl;
-    books.push_back(newBook);
+	newBook.landed = false;
+
+	// we open the database and we add a new book inside of it
+	db.open();
+
+	db.addValueToTable("books",std::vector<qic::Value>
+	{
+	    qic::Value(qic::String,newBook.author),
+	    qic::Value(qic::String,newBook.title),
+	    qic::Value(qic::Integer,newBook.id),
+	    qic::Value(qic::dataType::Boolean, false),
+	    qic::Value(qic::dataType::Integer, 0),
+	    qic::Value(qic::dataType::Integer, 0),
+	    qic::Value(qic::dataType::Integer, 0),
+	    qic::Value(qic::dataType::String, "")
+	});
+	db.close();
+	// we close the database and we add the book to the vector
+	std::cout << "Added a book to the catalogue" << std::endl;
+	books.push_back(newBook);
 }
 
-void list() {
+void list() 
+{
    // for each book in the "books" vector we print author, title and ID of it.
     for (auto bookSession : books)
     {
 	std::cout << "--------------------------------------------" << std::endl;
 	std::string landed_warning;
 	if (bookSession.landed) {
-	    landed_warning = "[landed]";
+	    landed_warning = "[Borrowed] until: " + std::to_string(bookSession.landedDate.day)
+				+ "/" + std::to_string(bookSession.landedDate.month) 
+				+ "/" + std::to_string(bookSession.landedDate.year)
+				+ " by: " + bookSession.person_who_has_the_book;
 	}
 	std::cout << "Title  : " << bookSession.title << landed_warning << std::endl;
 	std::cout << "Author : " << bookSession.author << std::endl;
 	std::cout << "ID     : " << bookSession.id << std::endl;
-    }
-    // then we print the options again.
-    std::cout <<"\n\n\n\n" << "-------options-------" << std::endl;
+	}
+	// then we print the options again.
+	std::cout <<"\n\n\n\n" << "-------options-------" << std::endl;
 }
 

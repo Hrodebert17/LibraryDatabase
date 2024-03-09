@@ -24,6 +24,7 @@ int main()
                   "Press L to list all the books\n" <<
                   "Press R to remove a book\n" <<
                   "Press S to search\n" <<
+		  "press B to borrow\n" <<
                   "Press Q to quit" <<
                   std::endl;
         // we get the input and then we handle it
@@ -48,6 +49,10 @@ int main()
 	else if (input == "L" || input == "l") 
 	{
 		list();
+	}
+	else if (input == "B" || input == "b")
+	{
+		borrowBook();
 	}
      }
     return 0;

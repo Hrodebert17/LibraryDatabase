@@ -18,13 +18,7 @@ public:
     std::string person_who_has_the_book;
     date landedDate;
     Book() {}
-    Book(int pId, std::string pAuthor, std::string pTitle, bool pLanded)
-    {
-        this->id = pId;
-        this->author = pAuthor;
-        this->title = pTitle;
-        this->landed = pLanded;
-    }
+    Book(int pId, std::string pAuthor, std::string pTitle, bool pLanded);
     bool operator==(const Book &other) {
         if (other.id == this->id && other.title == this->title && other.author == this->author && other.landed == this->landed) {
             return true;
@@ -46,5 +40,7 @@ void remove();
 void newBook();
 
 void list();
+
+void borrowBook();
 
 #endif 
