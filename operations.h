@@ -11,16 +11,16 @@ struct date {
 class Book
 {
 public:
-    bool landed;
+    bool lent;
     int id;
     std::string author;
     std::string title;
     std::string person_who_has_the_book;
-    date landedDate;
+    date lentDate;
     Book() {}
-    Book(int pId, std::string pAuthor, std::string pTitle, bool pLanded);
+    Book(int pId, std::string pAuthor, std::string pTitle, bool pLent);
     bool operator==(const Book &other) {
-        if (other.id == this->id && other.title == this->title && other.author == this->author && other.landed == this->landed) {
+        if (other.id == this->id && other.title == this->title && other.author == this->author && other.lent == this->lent) {
             return true;
         }
         return false;
@@ -43,6 +43,6 @@ void list();
 
 void borrowBook();
 
-void unBorrowBook();
+void returnBook();
 
-#endif 
+#endif

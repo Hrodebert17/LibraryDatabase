@@ -57,7 +57,7 @@ int main()
 	}
 	else if (input == "G" || input == "g")
 	{
-		unBorrowBook();
+		returnBook();
 	}
      }
     return 0;
