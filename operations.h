@@ -43,4 +43,6 @@ void list();
 
 void borrowBook();
 
+void unBorrowBook();
+
 #endif 

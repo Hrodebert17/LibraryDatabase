@@ -25,6 +25,7 @@ int main()
                   "Press R to remove a book\n" <<
                   "Press S to search\n" <<
 		  "press B to borrow\n" <<
+		  "press G to un-borrow\n" <<
                   "Press Q to quit" <<
                   std::endl;
         // we get the input and then we handle it
@@ -53,6 +54,10 @@ int main()
 	else if (input == "B" || input == "b")
 	{
 		borrowBook();
+	}
+	else if (input == "G" || input == "g")
+	{
+		unBorrowBook();
 	}
      }
     return 0;

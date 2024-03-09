@@ -9,6 +9,54 @@ std::vector<Book> books;
 std::vector<std::string> tables;
 std::string input;
 
+void unBorrowBook() {
+	std::cout << "which book would you like to un borrow" << std::endl;
+	std::cin  >> input;
+	// to avoid errors caused by the user inserting a string instead of an int we add a try statment 
+	try {
+		// for each book we check if the id matches until we get one match
+		for (int i = 0; i < books.size(); i++) {
+			Book *book = &books.at(i);
+			if (std::stoi(input) == book->id) {
+				std::cout << "removing the book" << std::endl;
+				book->landed = false;
+				book->landedDate = date();
+				book->person_who_has_the_book = "";
+				break;
+			} 
+      		}
+		db.open();
+		db.dropTable("books");
+		db.createTable("books",std::vector<qic::dataType> 
+		{
+			qic::dataType::String, // author
+			qic::dataType::String, // title
+			qic::dataType::Integer, // book id
+			qic::dataType::Boolean, // landed 
+			qic::dataType::Integer, // landed day
+			qic::dataType::Integer, // landed month
+			qic::dataType::Integer, // landed year
+			qic::dataType::String,  // the name of the person who landed the book.
+		});
+		// now we update the database.
+		for (auto book : books) {
+		    db.addValueToTable("books",std::vector<qic::Value>
+		    {
+			    qic::Value(qic::String,book.author),
+			    qic::Value(qic::String,book.title),
+			    qic::Value(qic::Integer,book.id),
+			    qic::Value(qic::dataType::Boolean, book.landed),
+			    qic::Value(qic::dataType::Integer, book.landedDate.day),
+			    qic::Value(qic::dataType::Integer, book.landedDate.month),
+			    qic::Value(qic::dataType::Integer, book.landedDate.year),
+			    qic::Value(qic::dataType::String, book.person_who_has_the_book)
+		    });	
+		}
+		db.close();
+	} catch (std::exception) {}
+	
+}
+
 void borrowBook()
 {
 	std::cout << "which book would you like to borrow (insert the ID)" << std::endl;
