@@ -18,6 +18,7 @@ Here are some instructions on how to do that:
 ##### Pre requisites:
 - [Cmake](https://cmake.org/)
 - [Boost](https://www.boost.org/)
+- [Qic database](https://github.com/Hrodebert17/QIC-database) (put the source files in the libs folder)
 
 #### Compiling
 Compiling this project is pretty easy. 
@@ -31,6 +32,11 @@ Afterwards this command will generate the executable:
 
 ```
 cmake --build ./
+```
+
+or you can build it using mingw
+```
+g++ -std=c++2b -I/path_to_boost -o program main.cpp libs/Qic_database.cpp operations.cpp
 ```
 
 ### Executing the UI
